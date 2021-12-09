@@ -15,21 +15,30 @@ static int hash(Key key, int tablesize)
     return key % tablesize;
 }
 
+//TODO: REMOVE
+static void printTable(const HashTable* htable) {
+    if(htable->table == NULL) return;
+    printf_s("\n#====== Printing table.. ======#\n");
+    for(int i = 0; i < htable->size; i++) {
+        printf_s("\nhtable->table[%d].key = (%d)", i, htable->table[i].key);
+        printf_s("\nhash of key = (%d)", hash(htable->table[i].key, htable->size));
+        printf_s("\nindex = (%d)\n", i);
+    }
+}
+
 /*Leta framŒt enligt principen šppen adressering
  Antalet krockar returneras via pekaren col i parameterlistan*/
 static int linearProbe(const HashTable* htable, Key key, unsigned int *col)
 {
-    int iteration = hash(key, htable->size), coll = 0, end = iteration;
-    while(lookup(htable, hash(key, htable->size) != NULL)) {
-        if(iteration == htable->size) iteration = 0;
+    int iteration = hash(key, htable->size), end = iteration;
+    do {
+        printf_s("\nlinearProbe(); @ Key: (%d), Collision amount: (%d), Hash of key/End index: (%d), Iteration index: (%d), htable->size (%d)\n", key, (*col), end, iteration, htable->size);
+        if(htable->table[iteration].key != UNUSED) (*col)++;
+        else return iteration;
+        if(iteration == htable->size-1) iteration = -1;
         iteration++;
-        if(iteration == end) return -1; //TODO: Vad returnerar den ifall tabellen är full?
-    }
-    *col = coll;
-    return hash(iteration, htable->size);
-
-    /*TODO: Titta ifall det finns konflikt när värden är lika med varandra.
-     *      hash(); = index? */
+    }while(iteration != end);
+    return -1; //TODO: Vad ska returneras?
 }
 
 /*Allokera minne fšr hashtabellen*/
@@ -40,6 +49,7 @@ HashTable createHashTable(unsigned int size)
     if(bucketArray != NULL) {
         hashTable.table = bucketArray;
         hashTable.size = size;
+        for (int i = 0; i <= size; i++) hashTable.table[i].key = UNUSED; //TODO: REMOVE
         return hashTable;
     }
     hashTable.table = NULL;
@@ -52,10 +62,13 @@ HashTable createHashTable(unsigned int size)
 unsigned int insertElement(HashTable* htable, const Key key, const Value value)
 {
     if(htable->table == NULL) return 0;
-    unsigned int col, *pCol = &col;
-    int hash = linearProbe(htable, key, pCol);
-    htable->table[hash].key = key;
-    htable->table[hash].value = value;
+    unsigned int col = 0, *pCol = &col;
+    int val = hash(key, htable->size);
+    if(htable->table[val].key != key) val = linearProbe(htable, key, pCol);
+    htable->table[val].key = key;
+    htable->table[val].value = value;
+    printf_s("\n#----- @ insertElement(%d); -----#\n", key);
+    printTable(htable);
     assert(lookup(htable, key) != NULL);
     return col;
 }
@@ -64,21 +77,30 @@ unsigned int insertElement(HashTable* htable, const Key key, const Value value)
 void deleteElement(HashTable* htable, const Key key)
 {
     if(htable->table == NULL) return;
-    int val = hash(key, htable->size);
-    htable->table[val].key = 0;
-    /*TODO: Value behöver inte uppdateras eftersom att det ändå kommer att skrivas över
-     *      när det väl sätts in ett nytt värde */
-
+    for(int iteration = 0; iteration < htable->size; iteration++)
+        if(htable->table[iteration].key == key)
+            htable->table[iteration].key = UNUSED;
+    printf_s("\n#----- @ deleteElement(%d); -----#\n", key);
+    printTable(htable);
     assert(lookup(htable, key) == NULL);
 }
 
-/* Returnerar en pekare till vardet som key ar associerat med eller NULL om ingen sadan nyckel finns */
 const Value* lookup(const HashTable* htable, const Key key)
 {
-    int val = hash(key, htable->size);
-    if(htable->table[val].key == key) return &(htable->table[val].value); //TODO: Antar att detta är rätt vis att göra det på.
-    else return NULL;
+    for(int iteration = 0; iteration < htable->size; iteration++)
+        if(htable->table[iteration].key == key)
+            return &(htable->table[iteration].value);
+    return NULL;
 }
+
+/* Returnerar en pekare till vardet som key ar associerat med eller NULL om ingen sadan nyckel finns */
+/*const Value* lookup(const HashTable* htable, const Key key)
+{
+    // Lookup måste titta om key verkligen är key (inte hash comparison)
+    int value = hash(key, htable->size);
+    if(htable->table[value].key != UNUSED) return &(htable->table[value].value);
+    else return NULL;
+}*/
 
 /* Tommer Hashtabellen */
 void freeHashTable(HashTable* htable)
@@ -101,3 +123,4 @@ void printHashTable(const HashTable* htable)
     for(int i = 0; i < htable->size; i++)
         printPerson(&(htable->table[i]).value, 0);
 }
+
