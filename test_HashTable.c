@@ -35,8 +35,8 @@ void menu(void); /*A menu to test your functions with manual data och random dat
 int main(void)
 {
     //menu();
-    //test();
-    compareHashTableSizes();
+    test();
+    //compareHashTableSizes();
     // Verkar som att det inte finns någon kollision alls.
 
     return 0;
@@ -194,7 +194,7 @@ void test(void)
     assert(lookup(&htable, 790408) == NULL);
     assert(htable.table[0].key == 900610);
     assert(htable.table[1].key == 881011);
-    assert(htable.table[2].key == 830709);
+    assert(htable.table[2].key == 830709); //TODO: Det finns inget som gör att värdet ändrar plats?
     assert(htable.table[3].key == UNUSED);
     assert(htable.table[4].key == 931014);
     assert(htable.table[5].key == 600704);
