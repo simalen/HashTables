@@ -17,7 +17,6 @@ static int hash(Key key, int tablesize)
 
 /*Leta framŒt enligt principen šppen adressering
  Antalet krockar returneras via pekaren col i parameterlistan*/
-
 static int linearProbe(const HashTable* htable, Key key, unsigned int *col) {
     unsigned int iteration = hash(key, htable->size), index = iteration;
     while(*col < htable->size) {
