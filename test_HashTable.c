@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "Person.h"
-#define SIZE 10
+#define SIZE 50
 #define LOOPS 1000
 
 /*Typer fšr att hantera ett dynamiskt antal tabeller - anvands i compareHashTableSizes*/
@@ -193,7 +193,7 @@ void test(void)
     assert(lookup(&htable, 790408) == NULL);
     assert(htable.table[0].key == 900610);
     assert(htable.table[1].key == 881011);
-    assert(htable.table[2].key == 830709); //TODO: Det finns inget som gör att värdet ändrar plats?
+    assert(htable.table[2].key == 830709);
     assert(htable.table[3].key == UNUSED);
     assert(htable.table[4].key == 931014);
     assert(htable.table[5].key == 600704);

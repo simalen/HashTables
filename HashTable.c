@@ -7,7 +7,6 @@
 
 // Anvands for att markera en ledig plats i Hashtabellen
 
-
 /* Denna funktion tar en nyckel och returnerar ett hash-index
 dvs ett index till arrayen som Šr Hashtabellen */
 static int hash(Key key, int tablesize)
@@ -17,7 +16,8 @@ static int hash(Key key, int tablesize)
 
 /*Leta framŒt enligt principen šppen adressering
  Antalet krockar returneras via pekaren col i parameterlistan*/
-static int linearProbe(const HashTable* htable, Key key, unsigned int *col) {
+static int linearProbe(const HashTable* htable, Key key, unsigned int *col)
+{
     unsigned int iteration = hash(key, htable->size), index = iteration;
     while(*col < htable->size) {
         if(htable->table[index].key == UNUSED || htable->table[index].key == key) return index;
@@ -64,13 +64,14 @@ void deleteElement(HashTable* htable, const Key key)
     htable->table[index].key = UNUSED;
     for(int iteration = 1; iteration < htable->size; iteration++) {
         index = hash(key + iteration + col, htable->size);
-        if(htable->table[index].key == UNUSED) break; // Ifall den inte hittar något som matchar key längre så breakar den.
-        if(index != hash(htable->table[index].key, htable->size)) {
+        if(htable->table[index].key == UNUSED) break;
+        if(index != hash(htable->table[index].key, htable->size)) { // Se om man kan ändra den här
             int T = htable->table[index].key;
             htable->table[index].key = UNUSED;
             insertElement(htable, T, htable->table[index].value);
         }
     }
+    assert(lookup(htable, key) == NULL);
 }
 
 /* Returnerar en pekare till vardet som key ar associerat med eller NULL om ingen sadan nyckel finns */
@@ -90,7 +91,8 @@ const Value* lookup(const HashTable* htable, const Key key)
 void freeHashTable(HashTable* htable)
 {
     free((*htable).table);
-    assert(htable->table == NULL && htable->size == 0);
+    htable->size = 0;
+    (*htable).table = NULL;
 }
 
 /* Ger storleken av Hashtabellen */
