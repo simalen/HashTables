@@ -65,7 +65,7 @@ void deleteElement(HashTable* htable, const Key key)
     for(int iteration = 1; iteration < htable->size; iteration++) {
         index = hash(key + iteration + col, htable->size);
         if(htable->table[index].key == UNUSED) break;
-        if(index != hash(htable->table[index].key, htable->size)) { // Se om man kan ändra den här
+        if(index != hash(htable->table[index].key, htable->size)) {
             int T = htable->table[index].key;
             htable->table[index].key = UNUSED;
             insertElement(htable, T, htable->table[index].value);

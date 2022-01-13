@@ -35,8 +35,8 @@ void menu(void); /*A menu to test your functions with manual data och random dat
 int main(void)
 {
     //menu();
-    test();
-    //compareHashTableSizes();
+    //test();
+    compareHashTableSizes();
     // Verkar som att det inte finns någon kollision alls.
 
     return 0;
